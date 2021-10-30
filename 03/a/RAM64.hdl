@@ -1,0 +1,45 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/a/RAM64.hdl
+
+/**
+ * Memory of 64 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM64 {
+    IN in[16], load, address[6];
+    OUT out[16];
+
+    PARTS:
+    // 8x16 Registers
+    RAM8(in=in, load=A, address=address[0..2], out=a);
+    RAM8(in=in, load=B, address=address[0..2], out=b);
+    RAM8(in=in, load=C, address=address[0..2], out=c);
+    RAM8(in=in, load=D, address=address[0..2], out=d);
+    RAM8(in=in, load=E, address=address[0..2], out=e);
+    RAM8(in=in, load=F, address=address[0..2], out=f);
+    RAM8(in=in, load=G, address=address[0..2], out=g);
+    RAM8(in=in, load=H, address=address[0..2], out=h);
+
+    // Invert address bits
+    Not(in=address[5], out=na2);
+    Not(in=address[4], out=na1);
+    Not(in=address[3], out=na0);
+
+    // Selector
+    And4(a=na2,        b=na1,        c=na0,        d=load, out=A);
+    And4(a=na2,        b=na1,        c=address[3], d=load, out=B);
+    And4(a=na2,        b=address[4], c=na0,        d=load, out=C);
+    And4(a=na2,        b=address[4], c=address[3], d=load, out=D);
+    And4(a=address[5], b=na1,        c=na0,        d=load, out=E);
+    And4(a=address[5], b=na1,        c=address[3], d=load, out=F);
+    And4(a=address[5], b=address[4], c=na0,        d=load, out=G);
+    And4(a=address[5], b=address[4], c=address[3], d=load, out=H);
+
+    // Mux output
+    Mux8Way16(a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h, sel=address[3..5], out=out);
+}

@@ -1,0 +1,15 @@
+CHIP Zero {
+    IN in[16];
+    OUT out;
+    
+    PARTS:
+    Or3(a=in[0],b=in[1],c=in[2],out=o1);
+    Or3(a=in[3],b=in[4],c=in[5],out=o2);
+    Or3(a=in[6],b=in[7],c=in[8],out=o3);
+    Or3(a=in[9],b=in[10],c=in[11],out=o4);
+    Or3(a=in[12],b=in[13],c=in[14],out=o5);
+    Or3(a=in[15],b=o1,c=o2,out=o6);
+    Or3(a=o3,b=o4,c=o5,out=o7);
+    Or(a=o6,b=o7,out=nout);
+    Not(in=nout, out=out);
+}

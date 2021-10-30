@@ -1,0 +1,22 @@
+CHIP Extend16 {
+    IN in;
+    OUT out[16];
+
+    PARTS:
+  out[1]=in;
+  out[2]=in;
+  out[3]=in;
+  out[4]=in;
+  out[5]=in;
+  out[6]=in;
+  out[7]=in;
+  out[8]=in;
+  out[9]=in;
+  out[10]=in;
+  out[11]=in;
+  out[12]=in;
+  out[13]=in;
+  out[14]=in;
+  out[15]=in;
+  out[16]=in;
+}
