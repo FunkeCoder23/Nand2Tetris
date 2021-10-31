@@ -128,19 +128,50 @@ class Assembler():
                 self.stripped.remove(line)
             linenum += 1
 
+    def Ainstr(self,line):
+        bytecode = '0'
+        A = line[1:]
+        val = self.sym2int(A)
+        bytecode += (f"{val:015b}")
+        self.bytecode.append(bytecode)
+
+    # def Cinstr(self,line):
+        # bytecode = '111'
+
     def translate(self):
         for line in self.stripped:
             # Check for A type instruction
             if line[0] == '@':
-                bytecode = '0'
-                A = line[1:]
-                val = self.sym2int(A)
-                bytecode += (f"{val:015b}")
-                self.bytecode.append(bytecode)
+                self.Ainstr(line)
                 continue
             # Handle C type instructions
             # comp mandatory, dest,jump optional
             bytecode = '111'
+            dest=None
+            jump=None
+
+            # TODO, FIGURE OUT ACTUAL NUMBERS FOR THESE SHITS
+            
+            try:
+                destsep=line.index('=')
+                dest=line[:destsep]
+            except:
+                destsep=1
+            
+            try:
+                jumpsep=line.index(';')
+                jump=line[jumpsep+1:]
+            except:
+                jumpsep=len(line)
+            
+            comp=line[destsep:jumpsep+1]
+
+            # line=line.split(';')
+            print('\n'+line)
+            print(dest)
+            print(comp)
+            print(jump)
+
 
     # def dest2int(self,dest):
 
