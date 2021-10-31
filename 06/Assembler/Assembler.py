@@ -67,14 +67,10 @@ COMPSA = {
 }
 
 DESTS = {
-    None: "000",
-    "M": "001",
-    "D": "010",
-    "DM": "011",
-    "A": "100",
-    "AM": "101",
-    "AD": "110",
-    "ADM": "111",
+    None: 0,
+    "A": 4,
+    "D": 2,
+    "M": 1,
 }
 
 JUMPS = {
@@ -178,34 +174,39 @@ class Assembler():
                 self.stripped.remove(line)
             linenum += 1
 
-    def comp2str(self,comp):
+    def comp2str(self, comp):
         if comp in COMPS:
-            bytecode='0'
-            bytecode+=COMPS[comp]
+            bytecode = '0'
+            bytecode += COMPS[comp]
         elif comp in COMPSA:
-            bytecode='1'
-            bytecode+=COMPSA[comp]
+            bytecode = '1'
+            bytecode += COMPSA[comp]
         else:
             print(f"ERROR: Comp {comp} not found.")
             exit(1)
         return bytecode
 
-    def jump2str(self,jump):
+    def jump2str(self, jump):
         if jump in JUMPS:
-            bytecode=JUMPS[jump]
+            bytecode = JUMPS[jump]
         else:
             print(f"ERROR: Jump {jump} not found.")
             exit(1)
         return bytecode
 
-    def dest2str(self,dest):
-        if dest in DESTS:
-            bytecode=DESTS[dest]
-        else:
-            print(f"ERROR: Dest {dest} not found.")
-            exit(1)
+    def dest2str(self, dest):
+        # Handle null dest
+        if dest is None:
+            return "000"
+        destint = 0
+        for d in list(dest):
+            if d in DESTS:
+                destint += DESTS[d]
+            else:
+                print(f"ERROR: Dest {d} not found.")
+                exit(1)
+        bytecode = f"{destint:03b}"
         return bytecode
-
 
     def Ainstr(self, line):
         bytecode = '0'
@@ -241,9 +242,9 @@ class Assembler():
         else:
             comp = line[destsep+1:jumpsep]
         # Get bytecode for each part
-        bytecode+=self.comp2str(comp)
-        bytecode+=self.dest2str(dest)
-        bytecode+=self.jump2str(jump)
+        bytecode += self.comp2str(comp)
+        bytecode += self.dest2str(dest)
+        bytecode += self.jump2str(jump)
         self.bytecode.append(bytecode)
 
     def translate(self):
