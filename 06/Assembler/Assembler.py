@@ -32,10 +32,60 @@ REGISTERS = {
     "KBD": 24576,
 }
 
-DEST = {
-    "A": 4,
-    "D": 2,
-    "M": 1,
+COMPS = {
+    "0": "101010",
+    "1": "111111",
+    "-1": "111010",
+    "D": "001100",
+    "A": "110000",
+    "!D": "001101",
+    "!A": "110001",
+    "-D": "001111",
+    "-A": "110011",
+    "D+1": "011111",
+    "A+1": "110111",
+    "D-1": "001110",
+    "A-1": "110010",
+    "D+A": "000010",
+    "D-A": "010011",
+    "A-D": "000111",
+    "D&A": "000000",
+    "D|A": "010101",
+}
+
+COMPSA = {
+    "M": "110000",
+    "!M": "110001",
+    "-M": "110011",
+    "M+1": "110111",
+    "M-1": "110010",
+    "D+M": "000010",
+    "D-M": "010011",
+    "M-D": "000111",
+    "D&M": "000000",
+    "D|M": "010101",
+}
+
+DESTS = {
+    None: "000",
+    "M": "001",
+    "D": "010",
+    "DM": "011",
+    "A": "100",
+    "AM": "101",
+    "AD": "110",
+    "ADM": "111",
+}
+
+JUMPS = {
+    None: "000",
+    "JGT": "001",
+    "JEQ": "010",
+    "JGE": "011",
+    "JLT": "100",
+    "JNE": "101",
+    "JLE": "110",
+    "JMP": "111",
 }
 
 SYMBOLS = {}
@@ -53,12 +103,12 @@ class Assembler():
             self.asm = file.readlines()
 
         self.assemble()
-        # self.write_file()
+        self.write_file()
 
     def write_file(self):
         filename = os.path.splitext(self.filename)
-        fileout=(filename[0] + '.hack')
-        with open(fileout,'w') as fout:
+        fileout = (filename[0] + '.hak')
+        with open(fileout, 'w') as fout:
             fout.write('\n'.join(self.bytecode))
 
     def __repr__(self):
@@ -128,15 +178,73 @@ class Assembler():
                 self.stripped.remove(line)
             linenum += 1
 
-    def Ainstr(self,line):
+    def comp2str(self,comp):
+        if comp in COMPS:
+            bytecode='0'
+            bytecode+=COMPS[comp]
+        elif comp in COMPSA:
+            bytecode='1'
+            bytecode+=COMPSA[comp]
+        else:
+            print(f"ERROR: Comp {comp} not found.")
+            exit(1)
+        return bytecode
+
+    def jump2str(self,jump):
+        if jump in JUMPS:
+            bytecode=JUMPS[jump]
+        else:
+            print(f"ERROR: Jump {jump} not found.")
+            exit(1)
+        return bytecode
+
+    def dest2str(self,dest):
+        if dest in DESTS:
+            bytecode=DESTS[dest]
+        else:
+            print(f"ERROR: Dest {dest} not found.")
+            exit(1)
+        return bytecode
+
+
+    def Ainstr(self, line):
         bytecode = '0'
         A = line[1:]
         val = self.sym2int(A)
         bytecode += (f"{val:015b}")
         self.bytecode.append(bytecode)
 
-    # def Cinstr(self,line):
-        # bytecode = '111'
+    def Cinstr(self, line):
+        bytecode = '111'
+        dest = None
+        jump = None
+        # Check for =
+        try:
+            destsep = line.index('=')
+            dest = line[:destsep]
+        except:
+            destsep = 1
+        # Check for ;
+        try:
+            jumpsep = line.index(';')
+            jump = line[jumpsep+1:]
+        except:
+            jumpsep = len(line)
+        # 4 cases, in order of most likely:
+        # =, ;, neither, both
+        if dest is None:
+            comp = line[:jumpsep]
+        elif jump is None:
+            comp = line[destsep+1:]
+        elif dest is None and jump is None:
+            comp = line
+        else:
+            comp = line[destsep+1:jumpsep]
+        # Get bytecode for each part
+        bytecode+=self.comp2str(comp)
+        bytecode+=self.dest2str(dest)
+        bytecode+=self.jump2str(jump)
+        self.bytecode.append(bytecode)
 
     def translate(self):
         for line in self.stripped:
@@ -146,32 +254,9 @@ class Assembler():
                 continue
             # Handle C type instructions
             # comp mandatory, dest,jump optional
-            bytecode = '111'
-            dest=None
-            jump=None
-
-            # TODO, FIGURE OUT ACTUAL NUMBERS FOR THESE SHITS
-            
-            try:
-                destsep=line.index('=')
-                dest=line[:destsep]
-            except:
-                destsep=1
-            
-            try:
-                jumpsep=line.index(';')
-                jump=line[jumpsep+1:]
-            except:
-                jumpsep=len(line)
-            
-            comp=line[destsep:jumpsep+1]
-
-            # line=line.split(';')
-            print('\n'+line)
-            print(dest)
-            print(comp)
-            print(jump)
-
+            else:
+                self.Cinstr(line)
+                continue
 
     # def dest2int(self,dest):
 
