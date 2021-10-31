@@ -6,7 +6,7 @@
 import sys
 
 REGISTERS = {
-    "RO": 0,
+    "R0": 0,
     "R1":1,
     "R2":2,
     "R3":3,
@@ -22,24 +22,34 @@ REGISTERS = {
     "R13":13,
     "R14":14,
     "R15":15,
-    "KBD":11111,
-    "SCREEN":8192,
+    "SP":0,
+    "LCL":1,
+    "ARG":2,
+    "THIS":3,
+    "THAT":4,
+    "SCREEN":16384,
+    "KBD":24576,
 }
 
-TOKENS=[
-    "//",
+DEST={
+    "A":4,
+    "D":2,
+    "M":1,
+}
 
-]
-SYMBOLS = []
+STACK={}
 
 
 
 class Assembler():
     def __init__(self):
+
+        self.symbols=[]
+
         self.parse_arguments()
         with open(self.filename, 'r') as file:
             self.asm = file.readlines()
-        self.symbols=[]
+        self.assemble()
 
     def __repr__(self):
         '''
@@ -65,6 +75,10 @@ class Assembler():
             self.filename = sys.argv[1]
             print(f"Assembling {self.filename}")
     
+    def assemble(self):
+        self.symbolize()
+        self.translate()
+
     def symbolize(self):
         """
         Converts ASM to it's base symbols
@@ -82,3 +96,27 @@ class Assembler():
                 continue
             # Store whatever is left
             self.symbols.append(line)
+
+    def translate(self):
+        for line in self.symbols:
+            if line[0] == '@':
+                A=line[1:]
+                self.reg2int(A)
+
+    def reg2int(self,sym):
+        try:
+            symint=int(sym)
+        except:
+            pass
+        else:
+            return symint
+        if sym in REGISTERS:
+            return REGISTERS[sym]
+        elif sym in STACK:
+            return STACK[sym]
+        else:
+            STACK.update({sym:len(STACK)+16})
+            return STACK[sym]
+
+Assy = Assembler()
+print(STACK)
