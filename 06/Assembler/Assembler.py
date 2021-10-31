@@ -38,14 +38,14 @@ DEST = {
     "M": 1,
 }
 
-STACK = {}
+SYMBOLS = {}
 
 
 class Assembler():
     def __init__(self):
 
-        self.symbols = []
-        self.bytecode=[]
+        self.stripped = []
+        self.bytecode = []
 
         self.parse_arguments()
         with open(self.filename, 'r') as file:
@@ -61,15 +61,15 @@ class Assembler():
         '''
         Print the ASM (original) representation of the file provided
         '''
-        ASM=''.join(self.asm)
-        SYM='\n'.join(self.symbols)
-        BYTECODE='\n'.join(self.bytecode)
+        ASM = ''.join(self.asm)
+        STRIP = '\n'.join(self.stripped)
+        BYTECODE = '\n'.join(self.bytecode)
         return (
             f"{self.filename}\n"
             f"ASM:\n{ASM}\n\n"
-            f"Symbols:\n{SYM}\n\n"
+            f"STRIPPED:\n{STRIP}\n\n"
             f"BYTECODE:\n{BYTECODE}\n\n"
-            f"STACK:\n{STACK}\n\n"
+            f"SYMBOLS:\n{SYMBOLS}\n\n"
         )
 
     def __print__(self):
@@ -110,15 +110,20 @@ class Assembler():
             if len(line) == 0:
                 continue
             # Store whatever is left
-            self.symbols.append(line)
+            self.stripped.append(line)
 
     def translate(self):
-        for line in self.symbols:
+        for line in self.stripped:
+            # Check for A type instruction
             if line[0] == '@':
+                bytecode = '0'
                 A = line[1:]
                 val = self.reg2int(A)
-                bytecode = f"0{val:015b}"
+                bytecode += (f"{val:015b}")
                 self.bytecode.append(bytecode)
+            else:
+                bytecode = '1'
+            
 
     def reg2int(self, sym):
         try:
@@ -129,11 +134,11 @@ class Assembler():
             return symint
         if sym in REGISTERS:
             return REGISTERS[sym]
-        elif sym in STACK:
-            return STACK[sym]
+        elif sym in SYMBOLS:
+            return SYMBOLS[sym]
         else:
-            STACK.update({sym: len(STACK)+16})
-            return STACK[sym]
+            SYMBOLS.update({sym: len(SYMBOLS)+16})
+            return SYMBOLS[sym]
 
 
 Assy = Assembler()
