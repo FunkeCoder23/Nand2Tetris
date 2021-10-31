@@ -96,8 +96,8 @@ class Assembler():
             print(f"Assembling {self.filename}")
 
     def assemble(self):
-        self.label()
         self.symbolize()
+        self.label()
         self.translate()
 
     def symbolize(self):
@@ -123,10 +123,9 @@ class Assembler():
         for line in self.stripped:
             # Check for label
             if line[0] == '(':
-                print("GOT HERE")
                 label = line[1:-1]
                 self.sym2int(label, linenum)
-            self.stripped.remove(line)
+                self.stripped.remove(line)
             linenum += 1
 
     def translate(self):
