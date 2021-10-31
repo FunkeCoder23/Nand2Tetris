@@ -3,59 +3,74 @@
 # FunkeCoder23
 # v0.0.1
 
+import os
 import sys
 
 REGISTERS = {
     "R0": 0,
-    "R1":1,
-    "R2":2,
-    "R3":3,
-    "R4":4,
-    "R5":5,
-    "R6":6,
-    "R7":7,
-    "R8":8,
-    "R9":9,
-    "R10":10,
-    "R11":11,
-    "R12":12,
-    "R13":13,
-    "R14":14,
-    "R15":15,
-    "SP":0,
-    "LCL":1,
-    "ARG":2,
-    "THIS":3,
-    "THAT":4,
-    "SCREEN":16384,
-    "KBD":24576,
+    "R1": 1,
+    "R2": 2,
+    "R3": 3,
+    "R4": 4,
+    "R5": 5,
+    "R6": 6,
+    "R7": 7,
+    "R8": 8,
+    "R9": 9,
+    "R10": 10,
+    "R11": 11,
+    "R12": 12,
+    "R13": 13,
+    "R14": 14,
+    "R15": 15,
+    "SP": 0,
+    "LCL": 1,
+    "ARG": 2,
+    "THIS": 3,
+    "THAT": 4,
+    "SCREEN": 16384,
+    "KBD": 24576,
 }
 
-DEST={
-    "A":4,
-    "D":2,
-    "M":1,
+DEST = {
+    "A": 4,
+    "D": 2,
+    "M": 1,
 }
 
-STACK={}
-
+STACK = {}
 
 
 class Assembler():
     def __init__(self):
 
-        self.symbols=[]
+        self.symbols = []
+        self.bytecode=[]
 
         self.parse_arguments()
         with open(self.filename, 'r') as file:
             self.asm = file.readlines()
         self.assemble()
+        self.write_file()
+
+    def write_file(self):
+        fileout = os.path.splitext(self.filename)
+        print(fileout)
 
     def __repr__(self):
         '''
         Print the ASM (original) representation of the file provided
         '''
-        return ''.join(self.asm)
+        ASM=''.join(self.asm)
+        SYM='\n'.join(self.symbols)
+        BYTECODE='\n'.join(self.bytecode)
+        return (
+            f"{self.filename}\n"
+            f"ASM:\n{ASM}\n\n"
+            f"Symbols:\n{SYM}\n\n"
+            f"BYTECODE:\n{BYTECODE}\n\n"
+            f"STACK:\n{STACK}\n\n"
+        )
 
     def __print__(self):
         '''
@@ -74,7 +89,7 @@ class Assembler():
         else:
             self.filename = sys.argv[1]
             print(f"Assembling {self.filename}")
-    
+
     def assemble(self):
         self.symbolize()
         self.translate()
@@ -84,13 +99,13 @@ class Assembler():
         Converts ASM to it's base symbols
         Removes comments and whitespace
         """
-        #Check every line
+        # Check every line
         for line in self.asm:
             # Check for comments and remove
-            comment=line.rfind("//")
-            line=line[:comment]
+            comment = line.rfind("//")
+            line = line[:comment]
             # Remove whitespace
-            line=line.strip()
+            line = line.strip()
             # Remove empty lines after stripping
             if len(line) == 0:
                 continue
@@ -100,12 +115,14 @@ class Assembler():
     def translate(self):
         for line in self.symbols:
             if line[0] == '@':
-                A=line[1:]
-                self.reg2int(A)
+                A = line[1:]
+                val = self.reg2int(A)
+                bytecode = f"0{val:015b}"
+                self.bytecode.append(bytecode)
 
-    def reg2int(self,sym):
+    def reg2int(self, sym):
         try:
-            symint=int(sym)
+            symint = int(sym)
         except:
             pass
         else:
@@ -115,8 +132,10 @@ class Assembler():
         elif sym in STACK:
             return STACK[sym]
         else:
-            STACK.update({sym:len(STACK)+16})
+            STACK.update({sym: len(STACK)+16})
             return STACK[sym]
 
+
 Assy = Assembler()
-print(STACK)
+print(repr(Assy))
+# print(STACK)
