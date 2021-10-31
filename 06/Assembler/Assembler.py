@@ -170,7 +170,6 @@ class Assembler():
     def label(self):
         linenum = 0
         for line in self.stripped:
-            print(line)
             # Check for label
             if line[0] == '(':
                 label = line[1:-1]

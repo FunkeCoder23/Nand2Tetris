@@ -82,7 +82,7 @@ Computes the value of comp and stores the result in dest.
 If (comp jump 0), jumps to execute ROM[A]
 
 #### Syntax:
-_dest_ = _comp_; _jump_ (both dest and jump are optional)
+_dest_=_comp_;_jump_ (both dest and jump are optional)
 
 where:
 - _comp_ = { 0 | 1  | -1 | R | !R | -R | R+1 | R-1 | R1+R2 | R1-R2 | R1&R2 | R1|R2 }
