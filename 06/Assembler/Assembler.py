@@ -104,7 +104,7 @@ class Assembler():
 
     def write_file(self):
         filename = os.path.splitext(self.filename)
-        fileout = (filename[0] + '.hak')
+        fileout = (filename[0] + '.hack')
         with open(fileout, 'w') as fout:
             fout.write('\n'.join(self.bytecode))
 
@@ -302,5 +302,5 @@ class Assembler():
 
 
 Assy = Assembler()
-print(repr(Assy))
+# print(repr(Assy))
 # print(STACK)
