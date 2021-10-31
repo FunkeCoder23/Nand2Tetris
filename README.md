@@ -45,30 +45,34 @@ Or(a=a, b=b, out=externalout, out=internalout);
 
 ### A Type Instruction
 
-Semantics:
+#### Semantics:
 Sets A register to the constant
-Side effects:
-RAM[A] becomes selected RAM register
-ROM[A] becomes selected ROM register
-Syntax:
-@value 0vvv vvvv vvvv vvvv
-Where value is either:
-• A constant, or
-• A symbol bound to a constant
+
+#### Side effects:
+- RAM[A] becomes selected RAM register
+- ROM[A] becomes selected ROM register
+
+#### Syntax:
+@*value* 0vvv vvvv vvvv vvvv
+Where *value* is either:
+- A constant, or
+- A symbol bound to a constant
 
 ### C Type Instruction
 
-Semantics:
+#### Semantics:
 Computes the value of comp and stores the result in dest.
+
 If (comp jump 0), jumps to execute ROM[A]
-Syntax:
-dest = comp; jump (both dest and jump are optional)
+
+#### Syntax:
+_dest_ = _comp_; _jump_ (both dest and jump are optional)
+
 where:
-R= D, A, M
-comp = 0, 1 , -1, R, !R, -R, R+1, R-1, R1+R2, R1-R2, R1&R2, R1|R2
-dest = null, M, D, DM, A, AM, AD, ADM (M stands for RAM[A]
-jump = null, JGT, JEQ, JLT, JNE, JLE, JMP
+- _comp_ = { 0 | 1  | -1 | R | !R | -R | R+1 | R-1 | R1+R2 | R1-R2 | R1&R2 | R1|R2 }
+- _dest_ = { null | M | D | DM | A | AM | AD | ADM}
+    - (M stands for RAM[A])
+- _jump_ = { null | JGT | JEQ | JLT | JNE | JLE | JMP}
 
-```
-
-```
+and 
+- R = { D | A | M }:
