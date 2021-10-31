@@ -92,6 +92,7 @@ class Assembler():
     def __init__(self):
 
         self.stripped = []
+        self.nolabels = []
         self.bytecode = []
 
         self.parse_arguments()
@@ -113,11 +114,13 @@ class Assembler():
         '''
         ASM = ''.join(self.asm)
         STRIP = '\n'.join(self.stripped)
+        NOLABELS ='n'.join(self.nolabels)
         BYTECODE = '\n'.join(self.bytecode)
         return (
             f"{self.filename}\n"
             # f"ASM:\n{ASM}\n\n"
             f"STRIPPED:\n{STRIP}\n\n"
+            f"NOLABELS:\n{NOLABELS}\n\n"
             f"BYTECODE:\n{BYTECODE}\n\n"
             f"SYMBOLS:\n{SYMBOLS}\n\n"
             f"LABELS:\n{LABELS}\n\n"
@@ -142,11 +145,11 @@ class Assembler():
             print(f"Assembling {self.filename}")
 
     def assemble(self):
-        self.symbolize()
+        self.stripper()
         self.label()
         self.translate()
 
-    def symbolize(self):
+    def stripper(self):
         """
         Converts ASM to it's base symbols
         Removes comments and whitespace
@@ -167,12 +170,14 @@ class Assembler():
     def label(self):
         linenum = 0
         for line in self.stripped:
+            print(line)
             # Check for label
             if line[0] == '(':
                 label = line[1:-1]
                 self.sym2int(label, linenum)
-                self.stripped.remove(line)
-            linenum += 1
+            else:
+                self.nolabels.append(line)
+                linenum += 1
 
     def comp2str(self, comp):
         if comp in COMPS:
@@ -248,7 +253,7 @@ class Assembler():
         self.bytecode.append(bytecode)
 
     def translate(self):
-        for line in self.stripped:
+        for line in self.nolabels:
             # Check for A type instruction
             if line[0] == '@':
                 self.Ainstr(line)
