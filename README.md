@@ -1,7 +1,17 @@
 # Nand2Tetris
 
+* [HDL Tips](#hdl-tips)
+* [HACK Instruction Set](#hack-instruction-set)
+  + [THE ULTIMATE IMAGE](#the-ultimate-image)
+  + [A Type Instruction](#a-type-instruction)
+  + [C Type Instruction](#c-type-instruction)
+
+## About
+
 This is my attempt at Nand2Tetris.
+
 This readme includes some helpful tips and information I wish was presented a little more readily.
+
 
 ## HDL Tips
 
@@ -10,12 +20,14 @@ This readme includes some helpful tips and information I wish was presented a li
 ```
 And16(a[0..7]=somelow, a[8..15]=somehigh, out=out);
 ```
+---
 
 ### To use high and low inputs, use true or false
 
 ```
 Or(a=in, b=true, out=in2);
 ```
+---
 
 ### You can make your own HDL chips, the HW sim will find it as long it’s in the same folder.
 
@@ -30,18 +42,21 @@ CHIP And4 {
 	And(a=c, b=d, out=cd);
 	And(a=ab, b=cd, out=out);
 ```
+---
 
 ### You cannot use an external output as an input to another pin, however you can add another output
 
 ```
 Or(a=a, b=b, out=externalout, out=internalout);
 ```
+---
 
 ## HACK Instruction Set
 
 ### THE ULTIMATE IMAGE
 
 ![Hack Language Specification](./pics/HackSpec.png)
+---
 
 ### A Type Instruction
 
@@ -57,6 +72,7 @@ Sets A register to the constant
 Where *value* is either:
 - A constant, or
 - A symbol bound to a constant
+---
 
 ### C Type Instruction
 
