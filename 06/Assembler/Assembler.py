@@ -39,6 +39,7 @@ DEST = {
 }
 
 SYMBOLS = {}
+LABELS = {}
 
 
 class Assembler():
@@ -50,12 +51,15 @@ class Assembler():
         self.parse_arguments()
         with open(self.filename, 'r') as file:
             self.asm = file.readlines()
+
         self.assemble()
-        self.write_file()
+        # self.write_file()
 
     def write_file(self):
-        fileout = os.path.splitext(self.filename)
-        print(fileout)
+        filename = os.path.splitext(self.filename)
+        fileout=(filename[0] + '.hack')
+        with open(fileout,'w') as fout:
+            fout.write('\n'.join(self.bytecode))
 
     def __repr__(self):
         '''
@@ -66,10 +70,11 @@ class Assembler():
         BYTECODE = '\n'.join(self.bytecode)
         return (
             f"{self.filename}\n"
-            f"ASM:\n{ASM}\n\n"
+            # f"ASM:\n{ASM}\n\n"
             f"STRIPPED:\n{STRIP}\n\n"
             f"BYTECODE:\n{BYTECODE}\n\n"
             f"SYMBOLS:\n{SYMBOLS}\n\n"
+            f"LABELS:\n{LABELS}\n\n"
         )
 
     def __print__(self):
@@ -91,6 +96,7 @@ class Assembler():
             print(f"Assembling {self.filename}")
 
     def assemble(self):
+        self.label()
         self.symbolize()
         self.translate()
 
@@ -112,32 +118,65 @@ class Assembler():
             # Store whatever is left
             self.stripped.append(line)
 
+    def label(self):
+        linenum = 0
+        for line in self.stripped:
+            # Check for label
+            if line[0] == '(':
+                print("GOT HERE")
+                label = line[1:-1]
+                self.sym2int(label, linenum)
+            self.stripped.remove(line)
+            linenum += 1
+
     def translate(self):
         for line in self.stripped:
             # Check for A type instruction
             if line[0] == '@':
                 bytecode = '0'
                 A = line[1:]
-                val = self.reg2int(A)
+                val = self.sym2int(A)
                 bytecode += (f"{val:015b}")
                 self.bytecode.append(bytecode)
-            else:
-                bytecode = '1'
-            
+                continue
+            # Handle C type instructions
+            # comp mandatory, dest,jump optional
+            bytecode = '111'
 
-    def reg2int(self, sym):
+    # def dest2int(self,dest):
+
+    def sym2int(self, sym, linenum=None):
+        '''
+        Converts @sym to integer
+
+        - if @sym == {R0, R1, R2, ...} returns 0,1,2,...
+        - if @sym == {SCREEN, KBD, ...} returns 16384, 24576, etc
+        - if @sym is user created return its value
+        - else add @sym to SYMBOLS list and return its value
+        '''
+        # See if constant val
         try:
             symint = int(sym)
         except:
             pass
         else:
             return symint
+        # Check in Registers
         if sym in REGISTERS:
             return REGISTERS[sym]
-        elif sym in SYMBOLS:
+        # Check in Symbols
+        if sym in SYMBOLS:
             return SYMBOLS[sym]
+        # Check in Labels
+        if sym in LABELS:
+            return LABELS[sym]
+        # if linenum passed, add to val
+        if linenum is not None:
+            LABELS.update({sym: linenum})
+            return LABELS[sym]
         else:
-            SYMBOLS.update({sym: len(SYMBOLS)+16})
+            addr = len(SYMBOLS)+16  # RAM address
+            SYMBOLS.update({sym: addr})
             return SYMBOLS[sym]
 
 
