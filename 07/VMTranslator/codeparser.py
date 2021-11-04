@@ -1,20 +1,33 @@
 #!/usr/bin/env python||python
-# VMTranslator for the HACK language
+# Parser for the HACK language
 # Project 7 of Nand2Tetris
 # FunkeCoder23
 # v0.0.1
 
+
 import os
 import sys
 
-class Translator():
-    def __init__(self):
+CMDS=[
+    "C_ARITHMETIC",
+    "C_PUSH",
+    "C_POP",
+    "C_LABEL",
+    "C_GOTO",
+    "C_IF",
+    "C_FUNCTION",
+    "C_RETURN",
+    "C_CALL",
+]
+
+class Parser():
+    def __init__(self,filename):
         self.stripped = []
-        self.parse_arguments()
-        with open(self.filename, 'r') as file:
+        self.translated=[]
+        with open(filename, 'r') as file:
             self.vmcode = file.readlines()
         self.stripper()
-
+        print(self.stripped)
 
     def write_file(self):
         filename = os.path.splitext(self.filename)
@@ -28,13 +41,13 @@ class Translator():
         '''
         VMCODE = ''.join(self.vmcode)
         STRIP = '\n'.join(self.stripped)
-        # NOLABELS ='n'.join(self.nolabels)
+        TRANSLATED ='n'.join(self.translated)
         # BYTECODE = '\n'.join(self.bytecode)
         return (
             f"{self.filename}\n"
             f"VMCODE:\n{VMCODE}\n\n"
             f"STRIPPED:\n{STRIP}\n\n"
-            # f"NOLABELS:\n{NOLABELS}\n\n"
+            f"TRANSLATED:\n{TRANSLATED}\n\n"
             # f"BYTECODE:\n{BYTECODE}\n\n"
             # f"SYMBOLS:\n{SYMBOLS}\n\n"
             # f"LABELS:\n{LABELS}\n\n"
@@ -46,17 +59,6 @@ class Translator():
         '''
         return ''.join(self.bytcode)
 
-    def parse_arguments(self):
-        '''
-        Parses command line arguments into filename
-        '''
-        if len(sys.argv) != 2:
-            print(f"""\nERROR: Missing filename. \nUsage: {sys.argv[0]} /path/to/file.asm
-            """)
-            exit(1)
-        else:
-            self.filename = sys.argv[1]
-            print(f"Assembling {self.filename}")
 
     def stripper(self):
         """
@@ -74,7 +76,7 @@ class Translator():
                 continue
             # Store whatever is left
             self.stripped.append(line)
-
-
-VMT = Translator() 
-print(repr(VMT))
+    
+    def parser(self):
+        for line in self.stripped: 
+            pass
