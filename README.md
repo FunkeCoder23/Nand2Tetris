@@ -5,7 +5,7 @@
   + [THE ULTIMATE IMAGE](#the-ultimate-image)
   + [A Type Instruction](#a-type-instruction)
   + [C Type Instruction](#c-type-instruction)
-
+* [Registers](#registers)
 ## About
 
 This is my attempt at Nand2Tetris.
@@ -92,3 +92,17 @@ where:
 
 and 
 - R = { D | A | M }:
+
+## Registers
+
+D, temp register
+M, RAM[A], ROM[A]
+A, set with @
+
+e.g.
+```
+@1 //A=1, M=RAM[1]
+D=M //D=RAM[1]
+M=A //RAM[1]=1
+0;JMP // go to ROM[1]
+```
