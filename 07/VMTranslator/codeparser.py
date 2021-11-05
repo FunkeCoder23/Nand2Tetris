@@ -5,20 +5,6 @@
 # v0.0.1
 
 
-import os
-import sys
-
-CMDS=[
-    "C_ARITHMETIC",
-    "C_PUSH",
-    "C_POP",
-    "C_LABEL",
-    "C_GOTO",
-    "C_IF",
-    "C_FUNCTION",
-    "C_RETURN",
-    "C_CALL",
-]
 
 class Parser():
     def __init__(self,filename):
@@ -27,13 +13,6 @@ class Parser():
         with open(filename, 'r') as file:
             self.vmcode = file.readlines()
         self.stripper()
-        print(self.stripped)
-
-    def write_file(self):
-        filename = os.path.splitext(self.filename)
-        fileout = (filename[0] + '.hack')
-        with open(fileout, 'w') as fout:
-            fout.write('\n'.join(self.bytecode))
 
     def __repr__(self):
         '''
@@ -57,7 +36,7 @@ class Parser():
         '''
         Print the bytecode (conversion) of the file provided
         '''
-        return ''.join(self.bytcode)
+        return ''.join(self.bytecode)
 
 
     def stripper(self):
