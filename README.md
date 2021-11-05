@@ -95,9 +95,9 @@ and
 
 ## Registers
 
-D, temp register
-M, RAM[A], ROM[A]
-A, set with @
+- D, temp register
+- M, RAM[A], ROM[A]
+- A, set with @
 
 e.g.
 ```
